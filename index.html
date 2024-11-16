@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send SMS with Infobip</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .response {
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Send SMS</h1>
+        <form id="smsForm">
+            <input type="text" id="sender" placeholder="Sender ID" required>
+            <input type="text" id="recipient" placeholder="Recipient Phone Number" required>
+            <textarea id="message" placeholder="Enter your message" rows="4" required></textarea>
+            <button type="submit">Send SMS</button>
+        </form>
+        <div class="response" id="response"></div>
+    </div>
+
+    <script>
+        document.getElementById('smsForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const sender = document.getElementById('sender').value;
+            const recipient = document.getElementById('recipient').value;
+            const message = document.getElementById('message').value;
+            const responseDiv = document.getElementById('response');
+
+            // Replace with your Infobip credentials
+            const API_KEY = 'e9e0f6cace28f95bc39b6591d186b14d-679c00c3-8014-4cb0-9843-9c1b8845dc4a';
+            const BASE_URL = 'https://51enrz.api.infobip.com';
+
+            try {
+                const response = await fetch(`${BASE_URL}/sms/2/text/advanced`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `App ${API_KEY}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        messages: [
+                            {
+                                from: sender,
+                                to: recipient,
+                                text: message,
+                            },
+                        ],
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    responseDiv.textContent = 'SMS sent successfully!';
+                    responseDiv.style.color = 'green';
+                } else {
+                    responseDiv.textContent = `Error: ${result.message || 'Failed to send SMS'}`;
+                    responseDiv.style.color = 'red';
+                }
+            } catch (error) {
+                responseDiv.textContent = `Error: ${error.message}`;
+                responseDiv.style.color = 'red';
+            }
+        });
+    </script>
+</body>
+</html>
